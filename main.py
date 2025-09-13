@@ -68,12 +68,12 @@ async def lifespan(app: FastAPI):
     _genes_metadata_dict = data["gene_metadata"]
     _synds_metadata_dict = data["disorder_metadata"]
     _gallery_df = get_gallery_encodings_set(_images_synds_dict)
-
     yield
 
 
 app = FastAPI(lifespan=lifespan)
 api_router = APIRouter(prefix="/api")
+
 
 class Img(BaseModel):
     img: str
@@ -119,6 +119,7 @@ async def predict_endpoint(username: Annotated[str, Depends(get_current_username
     print('Predict: {:.2f}s'.format(finished_time-encode_time))
     print('Total: {:.2f}s'.format(finished_time-start_time))
     return result
+
 
 @api_router.post("/encode")
 async def encode_endpoint(image: Img):
