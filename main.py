@@ -75,10 +75,6 @@ api_router = APIRouter(prefix="/api")
 class Img(BaseModel):
     img: str
 
-@api_router.get("/hello")
-def read_hello():
-    return {"message": "Hello from API"}
-
 
 @api_router.post("/predict")
 async def predict_endpoint(username: Annotated[str, Depends(get_current_username)], image: Img):
@@ -141,6 +137,19 @@ async def crop_endpoint(image: Img):
 @api_router.get("/status")
 async def status_endpoint():
     return {"status": "running"}
+
+
+# --- Configuration for serving the Vue.js frontend ---
+
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+app.mount("/assets", StaticFiles(directory=os.path.join(STATIC_DIR, "assets")), name="static-assets")
+@app.get("/{full_path:path}")
+async def serve_vue_app(full_path: str):
+    """
+    Serve the Vue app's index.html for any path that is not an API endpoint or a static file.
+    """
+    return FileResponse(os.path.join(STATIC_DIR, "index.html"))
+
 
 #if __name__ == "__main__":
 #    global _models
