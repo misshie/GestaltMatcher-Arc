@@ -10,7 +10,7 @@ from contextlib import asynccontextmanager
 from lib.utils_functions import readb64, encodeb64
 from datetime import datetime
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status, APIRouter
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 security = HTTPBasic()
@@ -70,12 +70,17 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-
+api_router = APIRouter(prefix="/api")
 
 class Img(BaseModel):
     img: str
 
-@app.post("/predict")
+@api_router.get("/hello")
+def read_hello():
+    return {"message": "Hello from API"}
+
+
+@api_router.post("/predict")
 async def predict_endpoint(username: Annotated[str, Depends(get_current_username)], image: Img):
     img = readb64(image.img)
 
@@ -116,14 +121,14 @@ async def predict_endpoint(username: Annotated[str, Depends(get_current_username
     print('Total: {:.2f}s'.format(finished_time-start_time))
     return result
 
-@app.post("/encode")
+@api_router.post("/encode")
 async def encode_endpoint(image: Img):
     img = readb64(image.img)
     aligned_img = face_align_crop(_cropper_model, img, _device)
     return {"encodings": encode(_models, 'cpu', aligned_img).to_dict()}
 
 
-@app.post("/crop")
+@api_router.post("/crop")
 async def crop_endpoint(image: Img):
     #print(image)
     img = readb64(image.img)
@@ -133,7 +138,7 @@ async def crop_endpoint(image: Img):
     return {"crop": base64.b64encode(img_en[1])}
 
 
-@app.get("/status")
+@api_router.get("/status")
 async def status_endpoint():
     return {"status": "running"}
 
