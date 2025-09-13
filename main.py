@@ -12,6 +12,9 @@ from datetime import datetime
 
 from fastapi import Depends, FastAPI, HTTPException, status, APIRouter
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.staticfiles import StaticFiles
+from starlette.responses import FileResponse
+import os
 
 security = HTTPBasic()
 
@@ -139,10 +142,17 @@ async def status_endpoint():
     return {"status": "running"}
 
 
+app.include_router(api_router)
+
+#
 # --- Configuration for serving the Vue.js frontend ---
+#
 
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
-app.mount("/assets", StaticFiles(directory=os.path.join(STATIC_DIR, "assets")), name="static-assets")
+app.mount("/assets", 
+          StaticFiles(directory=os.path.join(STATIC_DIR, "assets"))
+          , name="static-assets",
+          )
 @app.get("/{full_path:path}")
 async def serve_vue_app(full_path: str):
     """
