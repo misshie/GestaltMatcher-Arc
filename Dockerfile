@@ -14,5 +14,6 @@ COPY main.py ./main.py
 COPY data/image_gene_and_syndrome_metadata_20082024.p ./data/image_gene_and_syndrome_metadata_20082024.p
 COPY config.json ./config.json
 COPY lib ./lib
+COPY static ./static
 
 CMD [ "uvicorn",  "main:app", "--host", "0.0.0.0", "--port", "5000", "--workers", "2"]
