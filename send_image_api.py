@@ -52,7 +52,7 @@ def main():
     args = parse_args()
 
     # api-endpoint
-    predict_URL = "http://{}:{}/predict".format(args.url, args.port)
+    predict_URL = "http://{}:{}/api/predict".format(args.url, args.port)
 
     start_time = time.time()
 
