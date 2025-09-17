@@ -1,0 +1,29 @@
+services:
+  # 1. FastAPI API server service
+  api:
+    build:
+      context: . # Use the Dockerfile in the project root
+    container_name: gestaltmatcher-api
+    # Expose the port only to the internal Docker network
+    expose:
+      - "5000"
+
+  # 2. Nginx reverse proxy service
+  nginx:
+    build:
+      context: ./nginx # Use the Dockerfile in the ./nginx directory
+    container_name: gestaltmatcher-proxy
+    # Map host's port 443 to the container's port 443
+    ports:
+      - "443:443"
+    # Mount a named volume to persist the generated certificates
+    volumes:
+      - nginx_certs:/etc/ssl
+    # Ensure the api service starts before the nginx service
+    depends_on:
+      - api
+
+# Define the named volume for persisting certificates
+volumes:
+  nginx_certs:
+

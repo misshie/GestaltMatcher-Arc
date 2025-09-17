@@ -76,7 +76,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 origins = [
-    "http://localhost:3000", # Vue.js: nom run dev
+    "http://localhost:3000", # Vue.js: npm run dev
 ]
 
 app.add_middleware(
